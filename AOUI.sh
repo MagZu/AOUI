@@ -100,7 +100,7 @@ cd $folder
 
 mkdir dl
 cd dl
-wget http://update.anarchy-online.com/download/AO/AnarchyOnline_EP2.exe
+curl -O http://update.anarchy-online.com/download/AO/AnarchyOnline_EP2.exe
 
 #ThirdParty
 	if [[ $OPTIONAL == *"Clicksaver"* ]]; then
@@ -108,15 +108,15 @@ wget http://update.anarchy-online.com/download/AO/AnarchyOnline_EP2.exe
 	fi
 	if [[ $OPTIONAL == *"SLMap"* ]]; then
   		echo "Bitnykk's SLmap Selected"
-  		wget https://rubi-ka.net/bitnykk/SLmap-v2.1-normal.zip
+  		curl -O https://rubi-ka.net/bitnykk/SLmap-v2.1-normal.zip
 	fi
 	if [[ $OPTIONAL == *"RKMap"* ]]; then
   		echo "Savic's RK map Selected"
-  		wget http://alt.magzu.net/dl/SaavicksMap.zip
+  		curl -O http://alt.magzu.net/dl/SaavicksMap.zip
 	fi
 	if [[ $OPTIONAL == *"ItemAssistant"* ]]; then
   		echo "WIP - ItemAssistant Selected"
-      wget https://datapacket.dl.sourceforge.net/project/aoiaplus/AO%20Item%20Assistant%2B%202019%20Edition%20v1.3.0.4.exe
+      curl -O https://datapacket.dl.sourceforge.net/project/aoiaplus/AO%20Item%20Assistant%2B%202019%20Edition%20v1.3.0.4.exe
 	fi
 
 WINEPREFIX=$folder WINEARCH=win32 wine AnarchyOnline_EP2.exe
@@ -145,7 +145,7 @@ folder="$(zenity --file-selection --directory --title="Choose install directory"
 clear
 echo 10 | dialog --title "Installing" --gauge "Creating wineprefix" 10 75 &
 
-WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 winetricks d3dcompiler_43 d3dx9 d9vk_master 
+WINEPREFIX=$folder WINEARCH=win32 winetricks d3dcompiler_43 d3dx9 d9vk_master > /dev/null
 
 cd $folder
 clear
@@ -153,7 +153,7 @@ echo 20 | dialog --title "Installing" --gauge "Downloading files" 10 75 &
 
 mkdir dl
 cd dl
-wget http://update.anarchy-online.com/download/AO/AnarchyOnline_EP2.exe -q
+curl -O http://update.anarchy-online.com/download/AO/AnarchyOnline_EP2.exe > /dev/null
 
 #ThirdParty
 	if [[ $OPTIONAL == *"Clicksaver"* ]]; then
@@ -162,15 +162,15 @@ wget http://update.anarchy-online.com/download/AO/AnarchyOnline_EP2.exe -q
 	fi
 	if [[ $OPTIONAL == *"SLMap"* ]]; then
   		#echo "Bitnykk's SLmap Selected"
-  		wget https://rubi-ka.net/bitnykk/SLmap-v2.1-normal.zip -q
+  		curl -O https://rubi-ka.net/bitnykk/SLmap-v2.1-normal.zip > /dev/null
 	fi
 	if [[ $OPTIONAL == *"RKMap"* ]]; then
   		#echo "Savic's RK map Selected"
-  		wget http://alt.magzu.net/dl/SaavicksMap.zip -q
+  		curl -O http://alt.magzu.net/dl/SaavicksMap.zip > /dev/null
 	fi
 	if [[ $OPTIONAL == *"ItemAssistant"* ]]; then
   		#echo "WIP - ItemAssistant Selected"
-  		wget https://datapacket.dl.sourceforge.net/project/aoiaplus/AO%20Item%20Assistant%2B%202019%20Edition%20v1.3.0.4.exe -q
+  		curl -O https://datapacket.dl.sourceforge.net/project/aoiaplus/AO%20Item%20Assistant%2B%202019%20Edition%20v1.3.0.4.exe > /dev/null
 	fi
 clear
 echo 30 | dialog --title "Installing" --gauge "Installing game. Please select defaults" 10 75 &
