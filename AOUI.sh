@@ -81,9 +81,9 @@ echo wined3d
 
 dialog --checklist "Choose from following (spacebar to select)" 0 0 0 \
 Clicksaver "Tool to look for missions" off \
-ItemAssistant "Keep track of your items" off \
 RKMap "Improved Rubi-Ka Planet Map" off \
 SLMap "Improved ShadowLands Planet Map" off \
+TinyDump "damage dumper to see how much damage you do" off \
 2> /var/tmp/optional.out
 OPTIONAL=`cat /var/tmp/optional.out | \
     sed -e "s/\"//g" -e "s/ /|/g" -e "s/|$//"`
@@ -91,44 +91,61 @@ OPTIONAL=`cat /var/tmp/optional.out | \
 
 
 folder="$(zenity --file-selection --directory --title="Choose install directory")"
+clear
+echo 10 | dialog --title "Installing" --gauge "Creating wineprefix" 10 75 &
 
-WINEPREFIX=$folder WINEARCH=win32 winetricks d3dcompiler_43 d3dx9
+WINEPREFIX=$folder WINEARCH=win32 winetricks d3dcompiler_43 d3dx9 > /dev/null
 
 cd $folder
-
-
+clear
+echo 20 | dialog --title "Installing" --gauge "Downloading files" 10 75 &
 
 mkdir dl
 cd dl
-curl -O http://update.anarchy-online.com/download/AO/AnarchyOnline_EP2.exe
+curl -O http://update.anarchy-online.com/download/AO/AnarchyOnline_EP2.exe > /dev/null
 
 #ThirdParty
 	if [[ $OPTIONAL == *"Clicksaver"* ]]; then
-  		echo "Clicksaver Selected"
+  		#echo "Clicksaver Selected" 
+  		curl -O http://alt.magzu.net/dl/CS240.zip > /dev/null
+  		mkdir ../drive_c/Clicksaver/
+  		unzip CS240.zip -d ../drive_c/Clicksaver/
 	fi
 	if [[ $OPTIONAL == *"SLMap"* ]]; then
-  		echo "Bitnykk's SLmap Selected"
-  		curl -O https://rubi-ka.net/bitnykk/SLmap-v2.1-normal.zip
+  		#echo "Bitnykk's SLmap Selected"
+  		curl -O https://rubi-ka.net/bitnykk/SLmap-v2.1-normal.zip > /dev/null
 	fi
 	if [[ $OPTIONAL == *"RKMap"* ]]; then
-  		echo "Savic's RK map Selected"
-  		curl -O http://alt.magzu.net/dl/SaavicksMap.zip
+  		#echo "Savic's RK map Selected"
+  		curl -O http://singsrv.magzu.net/SaavicksMap.zip > /dev/null
 	fi
-	if [[ $OPTIONAL == *"ItemAssistant"* ]]; then
-  		echo "WIP - ItemAssistant Selected"
-      curl -O https://datapacket.dl.sourceforge.net/project/aoiaplus/AO%20Item%20Assistant%2B%202019%20Edition%20v1.3.0.4.exe
+clear
+echo 30 | dialog --title "Installing" --gauge "Installing game. Please select defaults" 10 75 &
+
+WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 wine AnarchyOnline_EP2.exe 
+clear
+echo 95 | dialog --title "Installing" --gauge "Installing addons" 10 75 &
+	if [[ $OPTIONAL == *"SLMap"* ]]; then
+  		unzip SLmap-v2.1-normal.zip -d ../drive_c/Funcom/Anarchy\ Online/cd_image/textures/PlanetMap/ > /dev/null
+  		
 	fi
-
-WINEPREFIX=$folder WINEARCH=win32 wine AnarchyOnline_EP2.exe
-
-echo installation is complete.
+	if [[ $OPTIONAL == *"RKMap"* ]]; then
+  		rm ../drive_c/Funcom/Anarchy\ Online/cd_image/textures/PlanetMap/SaavicksMap/*
+  		unzip SaavicksMap.zip -d ../drive_c/Funcom/Anarchy\ Online/cd_image/textures/PlanetMap/SaavicksMap/ > /dev/null
+  		
+	fi
+clear
+echo 100 | dialog --title "Installing" --gauge "Done" 10 75 &
+sleep 3
+clear 
+echo installation is complete.          
 
             ;;
         2)
 echo d9vk  
 
 dialog --checklist "Choose from following (spacebar to select)" 0 0 0 \
-Clicksaver "Tool to look for missions" off \
+Clicksaver 'Tool to look for missions' off \
 ItemAssistant "Keep track of your items" off \
 RKMap "Improved Rubi-Ka Planet Map" off \
 SLMap "Improved ShadowLands Planet Map" off \
@@ -157,8 +174,10 @@ curl -O http://update.anarchy-online.com/download/AO/AnarchyOnline_EP2.exe > /de
 
 #ThirdParty
 	if [[ $OPTIONAL == *"Clicksaver"* ]]; then
-  		echo "Clicksaver Selected" > /dev/null
-  		
+  		#echo "Clicksaver Selected" 
+  		curl -O http://alt.magzu.net/dl/CS240.zip > /dev/null
+  		mkdir ../drive_c/Clicksaver/
+  		unzip CS240.zip -d ../drive_c/Clicksaver/
 	fi
 	if [[ $OPTIONAL == *"SLMap"* ]]; then
   		#echo "Bitnykk's SLmap Selected"
@@ -166,16 +185,23 @@ curl -O http://update.anarchy-online.com/download/AO/AnarchyOnline_EP2.exe > /de
 	fi
 	if [[ $OPTIONAL == *"RKMap"* ]]; then
   		#echo "Savic's RK map Selected"
-  		curl -O http://alt.magzu.net/dl/SaavicksMap.zip > /dev/null
-	fi
-	if [[ $OPTIONAL == *"ItemAssistant"* ]]; then
-  		#echo "WIP - ItemAssistant Selected"
-  		curl -O https://datapacket.dl.sourceforge.net/project/aoiaplus/AO%20Item%20Assistant%2B%202019%20Edition%20v1.3.0.4.exe > /dev/null
+  		curl -O http://singsrv.magzu.net/SaavicksMap.zip > /dev/null
 	fi
 clear
 echo 30 | dialog --title "Installing" --gauge "Installing game. Please select defaults" 10 75 &
 
 WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 wine AnarchyOnline_EP2.exe 
+clear
+echo 95 | dialog --title "Installing" --gauge "Installing addons" 10 75 &
+	if [[ $OPTIONAL == *"SLMap"* ]]; then
+  		unzip SLmap-v2.1-normal.zip -d ../drive_c/Funcom/Anarchy\ Online/cd_image/textures/PlanetMap/ > /dev/null
+  		
+	fi
+	if [[ $OPTIONAL == *"RKMap"* ]]; then
+  		rm ../drive_c/Funcom/Anarchy\ Online/cd_image/textures/PlanetMap/SaavicksMap/*
+  		unzip SaavicksMap.zip -d ../drive_c/Funcom/Anarchy\ Online/cd_image/textures/PlanetMap/SaavicksMap/ > /dev/null
+  		
+	fi
 clear
 echo 100 | dialog --title "Installing" --gauge "Done" 10 75 &
 sleep 3
