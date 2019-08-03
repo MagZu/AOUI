@@ -10,7 +10,7 @@ It can also install SaavickMap or Bitnykk's SL Map and custom UI
 <h3>Dependencies</h3>
 - Wine<br>
 - Winetricks<br>
-- dialog
+- dialog<br>
 - Zenity
 
 
