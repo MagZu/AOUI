@@ -32,8 +32,9 @@ MishBuddy "Alternative to ClickSaver" off \
 RKMap "Improved Rubi-Ka Planet Map" off \
 SLMap "Improved ShadowLands Planet Map" off \
 TinyDump "damage dumper to see how much damage you do" off \
+Notum-Dovtech "Custom UI for AO with multiple options" off \
 2> /var/tmp/optional.out
-if [ "$?" != "0" ]
+if [ "$?" = "1" ]
 then
 	clear
 	echo "cancel pressed. Exiting script."
@@ -118,6 +119,74 @@ curl -O http://update.anarchy-online.com/download/AO/AnarchyOnline_EP1.exe 2> /d
 		echo "WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 wine TinyDump.exe" >> $DIRECTORY/StartTinyDump.sh
 		chmod +x $DIRECTORY/StartTinyDump.sh
 	fi
+	if [[ $OPTIONAL == *"Notum-Dovtech"* ]]; then
+  		#echo "Notum-Dovtech Selected"
+  		dialog --radiolist "Which flavor of Notum-Dovtech? (spacebar to select)" 0 0 0 \
+		Notum-dovvetech "Vanilla theme" off \
+		Notum-dovvetech-dark "flat Dark theme" off \
+		Notum-dovvetech-edge "Vanilla but transparent window edges" off \
+		Notum-darktech "Dark mode theme" off \
+		Notum-darktech-mini "Flat dark mode with transparent window edges" off \
+		Notum-darktech-mini-HUD 'Flat dark mode with circular health/nano bars' off \
+		Notum-darktech-glass 'flat transparent theme' off \
+		2> /var/tmp/notumopt.out
+		if [ "$?" = "1" ]
+		then
+			clear
+			echo "cancel pressed. Exiting script."
+			exit
+		fi
+
+		notumopt=`cat /var/tmp/notumopt.out | \
+		    sed -e "s/\"//g" -e "s/ /|/g" -e "s/|$//"`
+		    echo 'optional :'$notumopt
+  		clear
+		echo 29 | dialog --title "Installing" --gauge "Installing Notum-Dovtech." 10 75 &
+		
+		curl -O https://rubi-ka.net/ndgui/ndGUI_4.3.4.7_Core.zip 2> /dev/null
+		mv ndGUI_4.3.4.7_Core.zip ndGUI_Core.zip
+		#curl -O https://rubi-ka.net/ndgui/ndGUI_4.3.4.7_New_Engine_Patch.zip 2> /dev/null
+		
+		if [[ $notumopt == *"Notum-dovvetech"* ]]; then
+			echo "Vanilla theme"
+			curl -O https://rubi-ka.net/ndgui/ndGUI_4.3.4.5_Theme_Dovve.zip 2> /dev/null
+			mv ndGUI_4.3.4.5_Theme_Dovve.zip ndGUI_theme.zip
+		fi
+		if [[ $notumopt == *"Notum-dovvetech-dark"* ]]; then
+			echo "flat dark theme"
+			curl -O https://rubi-ka.net/ndgui/ndGUI_4.3.4.5_Theme_DovveDark.zip 2> /dev/null
+			mv ndGUI_4.3.4.5_Theme_DovveDark.zip ndGUI_theme.zip
+		fi
+		if [[ $notumopt == *"Notum-dovvetech-edge"* ]]; then
+			echo "Vanilla but transparent window edges"
+			curl -O https://rubi-ka.net/ndgui/ndGUI_4.3.4.5_Theme_DovveEdge.zip 2> /dev/null
+			mv ndGUI_4.3.4.5_Theme_DovveEdge.zip ndGUI_theme.zip
+		fi
+		if [[ $notumopt == *"Notum-darktech"* ]]; then
+			echo "Dark mode theme"
+			curl -O https://rubi-ka.net/ndgui/ndGUI_4.3.4.5_Theme_Dark.zip 2> /dev/null
+			mv ndGUI_4.3.4.5_Theme_Dark.zip ndGUI_theme.zip
+		fi
+		if [[ $notumopt == *"Notum-darktech-mini"* ]]; then
+			echo "Flat dark mode with transparent window edges"
+			curl -O https://rubi-ka.net/ndgui/ndGUI_4.3.4.5_Theme_DarkMini.zip 2> /dev/null
+			mv ndGUI_4.3.4.5_Theme_DarkMini.zip ndGUI_theme.zip
+		fi
+		if [[ $notumopt == *"Notum-darktech-mini-HUD"* ]]; then
+			echo "flat dark mode with circular health and nano bars"
+			curl -O https://rubi-ka.net/ndgui/ndGUI_4.3.4.5_Theme_DarkMiniHUD.zip 2> /dev/null
+			mv ndGUI_4.3.4.5_Theme_DarkMiniHUD.zip ndGUI_theme.zip
+		fi
+		if [[ $notumopt == *"Notum-darktech-glass"* ]]; then
+			echo "flat transparent theme"
+			curl -O https://rubi-ka.net/ndgui/ndGUI_4.3.4.5_Theme_DarkGlass.zip 2> /dev/null
+			mv ndGUI_4.3.4.5_Theme_DarkGlass.zip ndGUI_theme.zip
+		fi
+		
+		
+		
+		
+	fi
 
 clear
 echo 30 | dialog --title "Installing" --gauge "Installing game. Please select defaults" 10 75 &
@@ -132,6 +201,29 @@ echo 95 | dialog --title "Installing" --gauge "Installing addons" 10 75 &
 	if [[ $OPTIONAL == *"RKMap"* ]]; then
   		rm ../drive_c/Funcom/Anarchy\ Online/cd_image/textures/PlanetMap/SaavicksMap/*
   		unzip SaavicksMap.zip -d ../drive_c/Funcom/Anarchy\ Online/cd_image/textures/PlanetMap/SaavicksMap/ 2> /dev/null
+  		
+	fi
+	if [[ $OPTIONAL == *"Notum-Dovtech"* ]]; then
+		cd $folder/drive_c/Funcom/Anarchy\ Online/
+		WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 wine AnarchyOnline.exe &
+		sleep 4
+		pkill anarchy.exe
+		cd $folder/dl
+		
+		prefs="../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Prefs/Prefs.xml"
+		if [ -f "$prefs" ];
+		then
+   			sed -i 's/Default/ndGUI/g' ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Prefs/Prefs.xml
+		else
+   			mkdir ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Prefs
+			echo "<Root>" > ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Prefs/Prefs.xml
+			echo '<Value name="GUIName"'" value='&quot;ndGUI&quot;' />" >> ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Prefs/Prefs.xml
+			echo "</Root>" >> ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Prefs/Prefs.xml
+		fi
+
+  		unzip ndGUI_Core.zip -d ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Gui/
+  		unzip -o ndGUI_theme.zip -d ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Gui/
+  		#unzip -o ndGUI_NE_patch.zip -d ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Gui/ 
   		
 	fi
 clear
@@ -186,8 +278,9 @@ MishBuddy "Alternative to ClickSaver" off \
 RKMap "Improved Rubi-Ka Planet Map" off \
 SLMap "Improved ShadowLands Planet Map" off \
 TinyDump "damage dumper to see how much damage you do" off \
+Notum-Dovtech "Custom UI for AO with multiple options" off \
 2> /var/tmp/optional.out
-if [ "$?" != "0" ]
+if [ "$?" = "1" ]
 then
 	clear
 	echo "cancel pressed. Exiting script."
@@ -271,6 +364,76 @@ curl -O http://update.anarchy-online.com/download/AO/AnarchyOnline_EP2.exe 2> /d
 		echo "WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 wine TinyDump.exe" >> $DIRECTORY/StartTinyDump.sh
 		chmod +x $DIRECTORY/StartTinyDump.sh
 	fi
+	if [[ $OPTIONAL == *"Notum-Dovtech"* ]]; then
+  		#echo "Notum-Dovtech Selected"
+  		dialog --radiolist "Which flavor of Notum-Dovtech? (spacebar to select)" 0 0 0 \
+		Notum-dovvetech "Vanilla theme" off \
+		Notum-dovvetech-dark "flat Dark theme" off \
+		Notum-dovvetech-edge "Vanilla but transparent window edges" off \
+		Notum-darktech "Dark mode theme" off \
+		Notum-darktech-mini "Flat dark mode with transparent window edges" off \
+		Notum-darktech-mini-HUD 'Flat dark mode with circular health/nano bars' off \
+		Notum-darktech-glass 'flat transparent theme' off \
+		2> /var/tmp/notumopt.out
+		if [ "$?" = "1" ]
+		then
+			clear
+			echo "cancel pressed. Exiting script."
+			exit
+		fi
+
+		notumopt=`cat /var/tmp/notumopt.out | \
+		    sed -e "s/\"//g" -e "s/ /|/g" -e "s/|$//"`
+		    echo 'optional :'$notumopt
+  		clear
+		echo 29 | dialog --title "Installing" --gauge "Installing Notum-Dovtech." 10 75 &
+		
+		curl -O https://rubi-ka.net/ndgui/ndGUI_4.3.4.7_Core.zip 2> /dev/null
+		mv ndGUI_4.3.4.7_Core.zip ndGUI_Core.zip
+		curl -O https://rubi-ka.net/ndgui/ndGUI_4.3.4.7_New_Engine_Patch.zip 2> /dev/null
+		mv ndGUI_4.3.4.7_New_Engine_Patch.zip ndGUI_NE_patch.zip
+		
+		if [[ $notumopt == *"Notum-dovvetech"* ]]; then
+			echo "Vanilla theme"
+			curl -O https://rubi-ka.net/ndgui/ndGUI_4.3.4.5_Theme_Dovve.zip 2> /dev/null
+			mv ndGUI_4.3.4.5_Theme_Dovve.zip ndGUI_theme.zip
+		fi
+		if [[ $notumopt == *"Notum-dovvetech-dark"* ]]; then
+			echo "flat dark theme"
+			curl -O https://rubi-ka.net/ndgui/ndGUI_4.3.4.5_Theme_DovveDark.zip 2> /dev/null
+			mv ndGUI_4.3.4.5_Theme_DovveDark.zip ndGUI_theme.zip
+		fi
+		if [[ $notumopt == *"Notum-dovvetech-edge"* ]]; then
+			echo "Vanilla but transparent window edges"
+			curl -O https://rubi-ka.net/ndgui/ndGUI_4.3.4.5_Theme_DovveEdge.zip 2> /dev/null
+			mv ndGUI_4.3.4.5_Theme_DovveEdge.zip ndGUI_theme.zip
+		fi
+		if [[ $notumopt == *"Notum-darktech"* ]]; then
+			echo "Dark mode theme"
+			curl -O https://rubi-ka.net/ndgui/ndGUI_4.3.4.5_Theme_Dark.zip 2> /dev/null
+			mv ndGUI_4.3.4.5_Theme_Dark.zip ndGUI_theme.zip
+		fi
+		if [[ $notumopt == *"Notum-darktech-mini"* ]]; then
+			echo "Flat dark mode with transparent window edges"
+			curl -O https://rubi-ka.net/ndgui/ndGUI_4.3.4.5_Theme_DarkMini.zip 2> /dev/null
+			mv ndGUI_4.3.4.5_Theme_DarkMini.zip ndGUI_theme.zip
+		fi
+		if [[ $notumopt == *"Notum-darktech-mini-HUD"* ]]; then
+			echo "flat dark mode with circular health and nano bars"
+			curl -O https://rubi-ka.net/ndgui/ndGUI_4.3.4.5_Theme_DarkMiniHUD.zip 2> /dev/null
+			mv ndGUI_4.3.4.5_Theme_DarkMiniHUD.zip ndGUI_theme.zip
+		fi
+		if [[ $notumopt == *"Notum-darktech-glass"* ]]; then
+			echo "flat transparent theme"
+			curl -O https://rubi-ka.net/ndgui/ndGUI_4.3.4.5_Theme_DarkGlass.zip 2> /dev/null
+			mv ndGUI_4.3.4.5_Theme_DarkGlass.zip ndGUI_theme.zip
+		fi
+		
+		
+		
+		
+	fi
+
 clear
 echo 30 | dialog --title "Installing" --gauge "Installing game. Please select defaults" 10 75 &
 
@@ -284,6 +447,29 @@ echo 95 | dialog --title "Installing" --gauge "Installing addons" 10 75 &
 	if [[ $OPTIONAL == *"RKMap"* ]]; then
   		rm ../drive_c/Funcom/Anarchy\ Online/cd_image/textures/PlanetMap/SaavicksMap/*
   		unzip SaavicksMap.zip -d ../drive_c/Funcom/Anarchy\ Online/cd_image/textures/PlanetMap/SaavicksMap/ 2> /dev/null
+  		
+	fi
+	if [[ $OPTIONAL == *"Notum-Dovtech"* ]]; then
+		cd $folder/drive_c/Funcom/Anarchy\ Online/
+		WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 wine AnarchyOnline.exe &
+		sleep 4
+		pkill anarchy.exe
+		cd $folder/dl
+		
+		prefs="../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Prefs/Prefs.xml"
+		if [ -f "$prefs" ];
+		then
+   			sed -i 's/Default/ndGUI/g' ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Prefs/Prefs.xml
+		else
+   			mkdir ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Prefs
+			echo "<Root>" > ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Prefs/Prefs.xml
+			echo '<Value name="GUIName"'" value='&quot;ndGUI&quot;' />" >> ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Prefs/Prefs.xml
+			echo "</Root>" >> ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Prefs/Prefs.xml
+		fi
+
+  		unzip ndGUI_Core.zip -d ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Gui/
+  		unzip -o ndGUI_theme.zip -d ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Gui/
+  		unzip -o ndGUI_NE_patch.zip -d ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Gui/ 
   		
 	fi
 clear
@@ -311,8 +497,9 @@ MishBuddy "Alternative to ClickSaver" off \
 RKMap "Improved Rubi-Ka Planet Map" off \
 SLMap "Improved ShadowLands Planet Map" off \
 TinyDump "damage dumper to see how much damage you do" off \
+Notum-Dovtech 'Custom UI for AO with multiple options' off \
 2> /var/tmp/optional.out
-if [ "$?" != "0" ]
+if [ "$?" = "1" ]
 then
 	clear
 	echo "cancel pressed. Exiting script."
@@ -399,6 +586,76 @@ curl -O http://update.anarchy-online.com/download/AO/AnarchyOnline_EP2.exe 2> /d
 		echo "WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 wine TinyDump.exe" >> $DIRECTORY/StartTinyDump.sh
 		chmod +x $DIRECTORY/StartTinyDump.sh
 	fi
+	if [[ $OPTIONAL == *"Notum-Dovtech"* ]]; then
+  		#echo "Notum-Dovtech Selected"
+  		dialog --radiolist "Which flavor of Notum-Dovtech? (spacebar to select)" 0 0 0 \
+		Notum-dovvetech "Vanilla theme" off \
+		Notum-dovvetech-dark "flat Dark theme" off \
+		Notum-dovvetech-edge "Vanilla but transparent window edges" off \
+		Notum-darktech "Dark mode theme" off \
+		Notum-darktech-mini "Flat dark mode with transparent window edges" off \
+		Notum-darktech-mini-HUD 'Flat dark mode with circular health/nano bars' off \
+		Notum-darktech-glass 'flat transparent theme' off \
+		2> /var/tmp/notumopt.out
+		if [ "$?" = "1" ]
+		then
+			clear
+			echo "cancel pressed. Exiting script."
+			exit
+		fi
+
+		notumopt=`cat /var/tmp/notumopt.out | \
+		    sed -e "s/\"//g" -e "s/ /|/g" -e "s/|$//"`
+		    echo 'optional :'$notumopt
+  		clear
+		echo 29 | dialog --title "Installing" --gauge "Installing Notum-Dovtech." 10 75 &
+		
+		curl -O https://rubi-ka.net/ndgui/ndGUI_4.3.4.7_Core.zip 2> /dev/null
+		mv ndGUI_4.3.4.7_Core.zip ndGUI_Core.zip
+		curl -O https://rubi-ka.net/ndgui/ndGUI_4.3.4.7_New_Engine_Patch.zip 2> /dev/null
+		mv ndGUI_4.3.4.7_New_Engine_Patch.zip ndGUI_NE_patch.zip
+		
+		if [[ $notumopt == *"Notum-dovvetech"* ]]; then
+			echo "Vanilla theme"
+			curl -O https://rubi-ka.net/ndgui/ndGUI_4.3.4.5_Theme_Dovve.zip 2> /dev/null
+			mv ndGUI_4.3.4.5_Theme_Dovve.zip ndGUI_theme.zip
+		fi
+		if [[ $notumopt == *"Notum-dovvetech-dark"* ]]; then
+			echo "flat dark theme"
+			curl -O https://rubi-ka.net/ndgui/ndGUI_4.3.4.5_Theme_DovveDark.zip 2> /dev/null
+			mv ndGUI_4.3.4.5_Theme_DovveDark.zip ndGUI_theme.zip
+		fi
+		if [[ $notumopt == *"Notum-dovvetech-edge"* ]]; then
+			echo "Vanilla but transparent window edges"
+			curl -O https://rubi-ka.net/ndgui/ndGUI_4.3.4.5_Theme_DovveEdge.zip 2> /dev/null
+			mv ndGUI_4.3.4.5_Theme_DovveEdge.zip ndGUI_theme.zip
+		fi
+		if [[ $notumopt == *"Notum-darktech"* ]]; then
+			echo "Dark mode theme"
+			curl -O https://rubi-ka.net/ndgui/ndGUI_4.3.4.5_Theme_Dark.zip 2> /dev/null
+			mv ndGUI_4.3.4.5_Theme_Dark.zip ndGUI_theme.zip
+		fi
+		if [[ $notumopt == *"Notum-darktech-mini"* ]]; then
+			echo "Flat dark mode with transparent window edges"
+			curl -O https://rubi-ka.net/ndgui/ndGUI_4.3.4.5_Theme_DarkMini.zip 2> /dev/null
+			mv ndGUI_4.3.4.5_Theme_DarkMini.zip ndGUI_theme.zip
+		fi
+		if [[ $notumopt == *"Notum-darktech-mini-HUD"* ]]; then
+			echo "flat dark mode with circular health and nano bars"
+			curl -O https://rubi-ka.net/ndgui/ndGUI_4.3.4.5_Theme_DarkMiniHUD.zip 2> /dev/null
+			mv ndGUI_4.3.4.5_Theme_DarkMiniHUD.zip ndGUI_theme.zip
+		fi
+		if [[ $notumopt == *"Notum-darktech-glass"* ]]; then
+			echo "flat transparent theme"
+			curl -O https://rubi-ka.net/ndgui/ndGUI_4.3.4.5_Theme_DarkGlass.zip 2> /dev/null
+			mv ndGUI_4.3.4.5_Theme_DarkGlass.zip ndGUI_theme.zip
+		fi
+		
+		
+		
+		
+	fi
+
 clear
 echo 30 | dialog --title "Installing" --gauge "Installing game. Please select defaults" 10 75 &
 
@@ -412,6 +669,29 @@ echo 95 | dialog --title "Installing" --gauge "Installing addons" 10 75 &
 	if [[ $OPTIONAL == *"RKMap"* ]]; then
   		rm ../drive_c/Funcom/Anarchy\ Online/cd_image/textures/PlanetMap/SaavicksMap/*
   		unzip SaavicksMap.zip -d ../drive_c/Funcom/Anarchy\ Online/cd_image/textures/PlanetMap/SaavicksMap/ 2> /dev/null
+  		
+	fi
+	if [[ $OPTIONAL == *"Notum-Dovtech"* ]]; then
+		cd $folder/drive_c/Funcom/Anarchy\ Online/
+		WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 wine AnarchyOnline.exe &
+		sleep 4
+		pkill anarchy.exe
+		cd $folder/dl
+		
+		prefs="../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Prefs/Prefs.xml"
+		if [ -f "$prefs" ];
+		then
+   			sed -i 's/Default/ndGUI/g' ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Prefs/Prefs.xml
+		else
+   			mkdir ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Prefs
+			echo "<Root>" > ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Prefs/Prefs.xml
+			echo '<Value name="GUIName"'" value='&quot;ndGUI&quot;' />" >> ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Prefs/Prefs.xml
+			echo "</Root>" >> ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Prefs/Prefs.xml
+		fi
+
+  		unzip ndGUI_Core.zip -d ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Gui/
+  		unzip -o ndGUI_theme.zip -d ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Gui/
+  		unzip -o ndGUI_NE_patch.zip -d ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Gui/ 
   		
 	fi
 clear
