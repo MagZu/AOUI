@@ -12,6 +12,7 @@ It can also install SaavickMap or Bitnykk's SL Map and Notum-Dovtech custom UI.
 - Winetricks<br>
 - dialog<br>
 - Zenity
+- unzip
 
 
 <h3>How to use</h3>
