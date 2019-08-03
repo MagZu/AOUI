@@ -16,7 +16,6 @@ It can also install SaavickMap or Bitnykk's SL Map and Notum-Dovtech custom UI.
 
 <h3>How to use</h3>
   <b>Step 1:</b> Download AOUI.sh and place it in a convinient folder.<br>
-  <b>Step 2:</b> open terminal and run chmod +x AOUI.sh<br>
-  <b>Step 3:</b> run terminal command: ./AOUI.sh<br>
-  <b>Step 4:</b> Follow the menu to install Anarchy Online.<br>
-  <b>Step 5:</b> when the Installer is done it will create launch scripts in the same folder you have AOUI.sh<br>
+  <b>Step 2:</b> open terminal and run bash AOUI.sh<br>
+  <b>Step 3:</b> Follow the menu to install Anarchy Online.<br>
+  <b>Step 4:</b> when the Installer is done it will create launch scripts in the same folder you have AOUI.sh<br>
