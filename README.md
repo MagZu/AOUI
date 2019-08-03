@@ -15,7 +15,7 @@ It can also install SaavickMap or Bitnykk's SL Map and custom UI
 
 
 <h4>How to use</h4>
-Step 1: Download AOUI.sh and place it in a convinient folder.<br>
-Step 2: open terminal and run chmod +x AOUI.sh<br>
-Step 3: run terminal command: ./AOUI.sh<br>
-Step 4: Follow the menu to install Anarchy Online.<br>
+<b>Step 1:</b> Download AOUI.sh and place it in a convinient folder.<br>
+<b>Step 2:</b> open terminal and run chmod +x AOUI.sh<br>
+  <b>Step 3:</b> run terminal command: ./AOUI.sh<br>
+  <b>Step 4:</b> Follow the menu to install Anarchy Online.<br>
