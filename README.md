@@ -7,14 +7,14 @@ It can install the old client and new client. With the new client you have the o
 The installer also have options for running Third party tools like Clicksaver,mishbuddy or tinydump easily inside of the same wine prefix of AO.
 It can also install SaavickMap or Bitnykk's SL Map and custom UI
 
-<h4>Dependencies</h4>
+<h3>Dependencies</h3>
 - Wine<br>
 - Winetricks<br>
 - dialog
 - Zenity
 
 
-<h4>How to use</h4>
+<h3>How to use</h3>
 <b>Step 1:</b> Download AOUI.sh and place it in a convinient folder.<br>
 <b>Step 2:</b> open terminal and run chmod +x AOUI.sh<br>
   <b>Step 3:</b> run terminal command: ./AOUI.sh<br>
