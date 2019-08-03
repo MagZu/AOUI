@@ -31,7 +31,7 @@ Clicksaver "Tool to look for missions" off \
 MishBuddy "Alternative to ClickSaver" off \
 RKMap "Improved Rubi-Ka Planet Map" off \
 SLMap "Improved ShadowLands Planet Map" off \
-TinyDump "WIP - damage dumper to see how much damage you do" off \
+TinyDump "damage dumper to see how much damage you do" off \
 2> /var/tmp/optional.out
 if [ "$?" != "0" ]
 then
@@ -185,7 +185,7 @@ Clicksaver "Tool to look for missions" off \
 MishBuddy "Alternative to ClickSaver" off \
 RKMap "Improved Rubi-Ka Planet Map" off \
 SLMap "Improved ShadowLands Planet Map" off \
-TinyDump "WIP - damage dumper to see how much damage you do" off \
+TinyDump "damage dumper to see how much damage you do" off \
 2> /var/tmp/optional.out
 if [ "$?" != "0" ]
 then
@@ -310,7 +310,7 @@ Clicksaver "Tool to look for missions" off \
 MishBuddy "Alternative to ClickSaver" off \
 RKMap "Improved Rubi-Ka Planet Map" off \
 SLMap "Improved ShadowLands Planet Map" off \
-TinyDump "WIP - damage dumper to see how much damage you do" off \
+TinyDump "damage dumper to see how much damage you do" off \
 2> /var/tmp/optional.out
 if [ "$?" != "0" ]
 then
