@@ -25,7 +25,7 @@ dialog_addons () {
 
 OPTIONAL=`cat /var/tmp/optional.out | \
     sed -e "s/\"//g" -e "s/ /|/g" -e "s/|$//"`
-    echo 'optional :'$OPTIONAL
+    echo 'optional :'$OPTIONAL 
 
 }
 
@@ -57,10 +57,10 @@ mishbuddy_install () {
   		#echo "MishBuddy Selected"
   		clear
 		echo 23 | dialog --title "Installing" --gauge "Downloading MishBuddy." 10 75 &
-  		curl -O curl -O https://www.mmotoolbox.com/download/mbsetup.exe 2> /dev/null
+  		curl -O https://www.mmotoolbox.com/download/mbsetup.exe 
   		clear
 		echo 24 | dialog --title "Installing" --gauge "Installing MishBuddy. Please Select Defaults" 10 75 &
-		WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 wine mbsetup.exe
+		WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 wine mbsetup.exe 
 		
 		#Shortcut
 		echo "#!/bin/bash" > $DIRECTORY/StartMishBuddy.sh
@@ -111,7 +111,7 @@ tinydump_install () {
   		curl -O http://tinydump.adams1.de/dateien/SetupTinyDump_1_1_1.exe 2> /dev/null
   		clear
 		echo 28 | dialog --title "Installing" --gauge "Installing TinyDump." 10 75 &
-  		WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 wine SetupTinyDump_1_1_1.exe /silent
+  		WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 wine SetupTinyDump_1_1_1.exe /silent 
   		
   		#Shortcut
   		echo "#!/bin/bash" > $DIRECTORY/StartTinyDump.sh
@@ -142,7 +142,7 @@ dovtech_install () {
 
 		notumopt=`cat /var/tmp/notumopt.out | \
 		    sed -e "s/\"//g" -e "s/ /|/g" -e "s/|$//"`
-		    echo 'optional :'$notumopt
+		    echo 'optional :'$notumopt 
   		clear
 		echo 29 | dialog --title "Installing" --gauge "Installing Notum-Dovtech." 10 75 &
 		
@@ -211,11 +211,11 @@ dovtech_unzip () {
 			echo "</Root>" >> ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Prefs/Prefs.xml
 		fi
 
-  		unzip ndGUI_Core.zip -d ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Gui/
-  		unzip -o ndGUI_theme.zip -d ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Gui/
+  		unzip ndGUI_Core.zip -d ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Gui/ 2> /dev/null
+  		unzip -o ndGUI_theme.zip -d ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Gui/ 2> /dev/null
   		
   		if [[ $engine == *"NE"* ]]; then
-  		unzip -o ndGUI_NE_patch.zip -d ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Gui/ 
+  		unzip -o ndGUI_NE_patch.zip -d ../drive_c/users/$USER/Local\ Settings/Application\ Data/Funcom/Anarchy\ Online/70dad3e6/Anarchy\ Online/Gui/ 2> /dev/null
 		fi
 
 }
@@ -227,6 +227,106 @@ echo "#!/bin/bash" > StartAO.sh
 echo "cd $folder/drive_c/Funcom/Anarchy\ Online/" >> StartAO.sh
 echo "WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 wine AnarchyOnline.exe" >> StartAO.sh
 chmod +x StartAO.sh
+
+}
+
+install_AO () {
+
+install=$1
+
+folder="$(zenity --file-selection --directory --title="Choose install directory")"
+clear
+echo 10 | dialog --title "Installing" --gauge "Creating wineprefix" 10 75 &
+
+
+if [[ $install == *"old-wined3d"* ]]; then
+	WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 winetricks winxp corefonts 
+fi
+if [[ $install == *"ne-wined3d"* ]]; then
+	WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 winetricks d3dcompiler_43 d3dx9 corefonts 
+fi
+if [[ $install == *"ne-d9vk"* ]]; then
+	WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 winetricks d3dcompiler_43 d3dx9 d9vk_master corefonts 
+fi
+
+cd $folder
+clear
+echo 20 | dialog --title "Installing" --gauge "Downloading files" 10 75 &
+
+mkdir dl
+cd dl
+
+if [[ $install == *"old-wined3d"* ]]; then
+	curl -O http://update.anarchy-online.com/download/AO/AnarchyOnline_EP1.exe 2> /dev/null
+fi
+if [[ $install == *"ne-wined3d"* ]]; then
+	curl -O http://update.anarchy-online.com/download/AO/AnarchyOnline_EP2.exe 2> /dev/null
+fi
+if [[ $install == *"ne-d9vk"* ]]; then
+	curl -O http://update.anarchy-online.com/download/AO/AnarchyOnline_EP2.exe 2> /dev/null
+fi       
+    
+#ThirdParty
+	if [[ $OPTIONAL == *"Clicksaver"* ]]; then
+		clicksaver_install
+	fi
+	if [[ $OPTIONAL == *"MishBuddy"* ]]; then
+		mishbuddy_install
+	fi
+	if [[ $OPTIONAL == *"SLMap"* ]]; then
+		slmap_install
+	fi
+	if [[ $OPTIONAL == *"RKMap"* ]]; then
+		rkmap_install
+	fi
+	if [[ $OPTIONAL == *"TinyDump"* ]]; then
+		tinydump_install
+	fi
+	if [[ $OPTIONAL == *"Notum-Dovtech"* ]]; then
+		dovtech_install
+	fi
+
+clear
+echo 30 | dialog --title "Installing" --gauge "Installing game. Please select defaults" 10 75 &
+if [[ $install == *"old-wined3d"* ]]; then
+	WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 wine AnarchyOnline_EP1.exe
+fi
+if [[ $install == *"ne-wined3d"* ]]; then
+	WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 wine AnarchyOnline_EP2.exe
+fi
+if [[ $install == *"ne-d9vk"* ]]; then
+	WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 wine AnarchyOnline_EP2.exe
+fi
+clear
+echo 95 | dialog --title "Installing" --gauge "Installing addons" 10 75 &
+
+
+	if [[ $OPTIONAL == *"SLMap"* ]]; then
+		slmap_unzip
+  		
+	fi
+	if [[ $OPTIONAL == *"RKMap"* ]]; then
+		rkmap_unzip
+  		
+	fi
+	if [[ $OPTIONAL == *"Notum-Dovtech"* ]]; then
+		dovtech_unzip
+  		
+	fi
+	
+	
+clear
+echo 99 | dialog --title "Installing" --gauge "Creating shortcuts" 10 75 &
+
+create_AO_shortcut
+
+
+clear
+echo 100 | dialog --title "Installing" --gauge "Done" 10 75 &
+sleep 3
+clear 
+echo installation is complete. 
+
 
 }
 
@@ -269,79 +369,8 @@ case $CHOICE in
 
 dialog_addons
 
-
-
-
-
-folder="$(zenity --file-selection --directory --title="Choose install directory")"
-clear
-echo 10 | dialog --title "Installing" --gauge "Creating wineprefix" 10 75 &
-
-WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 winetricks winxp > /dev/null
-cd $folder
-clear
-echo 20 | dialog --title "Installing" --gauge "Downloading files" 10 75 &
-
-mkdir dl
-cd dl
-curl -O http://update.anarchy-online.com/download/AO/AnarchyOnline_EP1.exe 2> /dev/null
-    
-    
-#ThirdParty
-	if [[ $OPTIONAL == *"Clicksaver"* ]]; then
-		clicksaver_install
-	fi
-	if [[ $OPTIONAL == *"MishBuddy"* ]]; then
-		mishbuddy_install
-	fi
-	if [[ $OPTIONAL == *"SLMap"* ]]; then
-		slmap_install
-	fi
-	if [[ $OPTIONAL == *"RKMap"* ]]; then
-		rkmap_install
-	fi
-	if [[ $OPTIONAL == *"TinyDump"* ]]; then
-		tinydump_install
-	fi
-	if [[ $OPTIONAL == *"Notum-Dovtech"* ]]; then
-		dovtech_install
-	fi
-
-clear
-echo 30 | dialog --title "Installing" --gauge "Installing game. Please select defaults" 10 75 &
-
-WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 wine AnarchyOnline_EP1.exe 
-clear
-echo 95 | dialog --title "Installing" --gauge "Installing addons" 10 75 &
-
-
-	if [[ $OPTIONAL == *"SLMap"* ]]; then
-		slmap_unzip
-  		
-	fi
-	if [[ $OPTIONAL == *"RKMap"* ]]; then
-		rkmap_unzip
-  		
-	fi
-	if [[ $OPTIONAL == *"Notum-Dovtech"* ]]; then
-		dovtech_unzip
-  		
-	fi
-	
-	
-clear
-echo 99 | dialog --title "Installing" --gauge "Creating shortcuts" 10 75 &
-
-create_AO_shortcut
-
-
-clear
-echo 100 | dialog --title "Installing" --gauge "Done" 10 75 &
-sleep 3
-clear 
-echo installation is complete.          
-
-    
+install_AO old-wined3d
+            
     
                 ;;
 
@@ -378,74 +407,15 @@ case $CHOICE in
         ###########################################
         ######### NEW Engine - wined3d ############
         ###########################################
+        
 echo wined3d
 
 dialog_addons
 
-
 engine=NE
 
-folder="$(zenity --file-selection --directory --title="Choose install directory")"
-clear
-echo 10 | dialog --title "Installing" --gauge "Creating wineprefix" 10 75 &
-
-WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 winetricks d3dcompiler_43 d3dx9 > /dev/null
-
-cd $folder
-clear
-echo 20 | dialog --title "Installing" --gauge "Downloading files" 10 75 &
-
-mkdir dl
-cd dl
-curl -O http://update.anarchy-online.com/download/AO/AnarchyOnline_EP2.exe 2> /dev/null
-
-#ThirdParty
-	if [[ $OPTIONAL == *"Clicksaver"* ]]; then
-		clicksaver_install
-	fi
-	if [[ $OPTIONAL == *"MishBuddy"* ]]; then
-		mishbuddy_install
-	fi
-	if [[ $OPTIONAL == *"SLMap"* ]]; then
-		slmap_install
-	fi
-	if [[ $OPTIONAL == *"RKMap"* ]]; then
-		rkmap_install
-	fi
-	if [[ $OPTIONAL == *"TinyDump"* ]]; then
-		tinydump_install
-	fi
-	if [[ $OPTIONAL == *"Notum-Dovtech"* ]]; then
-		dovtech_install
-	fi
-
-clear
-echo 30 | dialog --title "Installing" --gauge "Installing game. Please select defaults" 10 75 &
-
-WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 wine AnarchyOnline_EP2.exe 
-clear
-echo 95 | dialog --title "Installing" --gauge "Installing addons" 10 75 &
-
-	if [[ $OPTIONAL == *"SLMap"* ]]; then
-		slmap_unzip
-	fi
-	if [[ $OPTIONAL == *"RKMap"* ]]; then
-		rkmap_unzip
-	fi
-	if [[ $OPTIONAL == *"Notum-Dovtech"* ]]; then
-		dovtech_unzip
-	fi
-	
-clear
-echo 99 | dialog --title "Installing" --gauge "Creating shortcuts" 10 75 &
-
-create_AO_shortcut
-
-clear
-echo 100 | dialog --title "Installing" --gauge "Done" 10 75 &
-sleep 3
-clear 
-echo installation is complete.          
+install_AO ne-wined3d
+    
 
             ;;
         2)
@@ -460,73 +430,11 @@ echo d9vk
 
 dialog_addons
 
+engine=NE
 
-#New Engine - D9VK
+install_AO ne-d9vk
 
-folder="$(zenity --file-selection --directory --title="Choose install directory")"
-clear
-echo 10 | dialog --title "Installing" --gauge "Creating wineprefix" 10 75 &
-
-WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 winetricks d3dcompiler_43 d3dx9 d9vk_master > /dev/null
-
-cd $folder
-clear
-echo 20 | dialog --title "Installing" --gauge "Downloading files" 10 75 &
-
-mkdir dl
-cd dl
-curl -O http://update.anarchy-online.com/download/AO/AnarchyOnline_EP2.exe 2> /dev/null
-
-#ThirdParty
-	if [[ $OPTIONAL == *"Clicksaver"* ]]; then
-		clicksaver_install
-	fi
-	if [[ $OPTIONAL == *"MishBuddy"* ]]; then
-		mishbuddy_install
-	fi
-	if [[ $OPTIONAL == *"SLMap"* ]]; then
-		slmap_install
-	fi
-	if [[ $OPTIONAL == *"RKMap"* ]]; then
-		rkmap_install
-	fi
-	if [[ $OPTIONAL == *"TinyDump"* ]]; then
-		tinydump_install
-	fi
-	if [[ $OPTIONAL == *"Notum-Dovtech"* ]]; then
-		dovtech_install
-	fi
-
-clear
-echo 30 | dialog --title "Installing" --gauge "Installing game. Please select defaults" 10 75 &
-
-WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 wine AnarchyOnline_EP2.exe 
-clear
-echo 95 | dialog --title "Installing" --gauge "Installing addons" 10 75 &
-
-	if [[ $OPTIONAL == *"SLMap"* ]]; then
-		slmap_unzip
-	fi
-	if [[ $OPTIONAL == *"RKMap"* ]]; then
-		rkmap_unzip
-	fi
-	if [[ $OPTIONAL == *"Notum-Dovtech"* ]]; then
-		dovtech_unzip
-	fi
-	
-clear
-echo 99 | dialog --title "Installing" --gauge "Creating shortcuts" 10 75 &
-
-create_AO_shortcut
-
-
-
-
-clear
-echo 100 | dialog --title "Installing" --gauge "Done" 10 75 &
-sleep 3
-clear 
-echo installation is complete.          
+          
 
 esac
 esac
