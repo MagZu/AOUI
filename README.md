@@ -12,8 +12,6 @@ It can also install SaavickMap or Bitnykk's SL Map and Notum-Dovtech custom UI.
 - Winetricks<br>
 - dialog<br>
 - Zenity<br>
-- unzip
-
 
 <h3>How to use</h3>
   <b>Step 1:</b> Download AOUI.sh and place it in a convinient folder.<br>
