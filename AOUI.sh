@@ -4,6 +4,39 @@
         ############## Functions ##################
         ###########################################
 
+distro_prereq () {
+echo test
+
+
+}
+
+engine_selection () {
+
+dialog --radiolist "What AO client are you using? (spacebar to select)" 0 0 0 \
+		Old-engine "Old Engine" off \
+		New-engine "New Engine" off \
+		2> /var/tmp/engine.out
+		if [ "$?" = "1" ]
+		then
+			clear
+			echo "cancel pressed. Exiting script."
+			exit
+		fi
+
+		engineopt=`cat /var/tmp/engine.out | \
+		    sed -e "s/\"//g" -e "s/ /|/g" -e "s/|$//"`
+		    echo 'optional :'$engineopt 
+  		clear
+  		
+  	if [[ $engineopt == *"Old-engine"* ]]; then
+  		engine=NE
+  	fi
+  	if [[ $engineopt == *"New-engine"* ]]; then
+  		engine=NE
+  	fi
+
+
+}
 
 dialog_addons () {
 
@@ -220,15 +253,6 @@ dovtech_unzip () {
 
 }
 
-create_AO_shortcut () {
-
-cd $DIRECTORY
-echo "#!/bin/bash" > StartAO.sh
-echo "cd $folder/drive_c/Funcom/Anarchy\ Online/" >> StartAO.sh
-echo "WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 wine AnarchyOnline.exe" >> StartAO.sh
-chmod +x StartAO.sh
-
-}
 
 install_AO () {
 
@@ -236,8 +260,10 @@ install=$1
 
 folder="$(zenity --file-selection --directory --title="Choose install directory")"
 clear
-echo 10 | dialog --title "Installing" --gauge "Creating wineprefix" 10 75 &
 
+if [[ $install != *"3rd-party"* ]]; then
+echo 10 | dialog --title "Installing" --gauge "Creating wineprefix" 10 75 &
+fi
 
 if [[ $install == *"old-wined3d"* ]]; then
 	WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 winetricks winxp corefonts 
@@ -314,12 +340,14 @@ echo 95 | dialog --title "Installing" --gauge "Installing addons" 10 75 &
   		
 	fi
 	
-	
+if [[ $install != *"3rd-party"* ]]; then
+
 clear
 echo 99 | dialog --title "Installing" --gauge "Creating shortcuts" 10 75 &
 
 create_AO_shortcut
 
+fi
 
 clear
 echo 100 | dialog --title "Installing" --gauge "Done" 10 75 &
@@ -330,21 +358,149 @@ echo installation is complete.
 
 }
 
+create_AO_shortcut () {
+
+cd $DIRECTORY
+
+if [[ $kernel == *"FreeBSD"* ]]; then
+	echo 'env WINEPREFIX="/home/$USER/Games/Anarchy Online" wine C:\windows\command\start.exe /Unix "/home/$USER/Games/Anarchy Online/dosdevices/c:/users/Public/Desktop/Anarchy\ Online.lnk"'
+fi
+if [[ $kernel == *"Linux"* ]]; then
+echo "#!/bin/bash" > StartAO.sh
+echo "cd $folder/drive_c/Funcom/Anarchy\ Online/" >> StartAO.sh
+echo "WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 wine AnarchyOnline.exe" >> StartAO.sh
+fi
+
+chmod +x StartAO.sh
+
+
+
+}
+
+launch () {
+
+parameter=$1
+
+echo $parameter 'is being launched'
+me=$(basename "$0")
+
+if [ -f "$parameter" ]; then
+sh $parameter &
+sh $me
+fi
+if [ ! -f "$parameter" ]; then
+echo $prog" not Installed"
+fi
+
+
+}
+
+
 
         ######################################################
         ############## Install script start ##################
         ######################################################
-
-
 DIRECTORY=`pwd`
 HEIGHT=15
 WIDTH=60
-CHOICE_HEIGHT=2
+CHOICE_HEIGHT=3
+BACKTITLE="Anarchy Online Unix Installer"
+MENU="Choose what to do?"
+
+OPTIONS=(1 "Launch"
+         2 "Install"
+         3 "Configure")
+         
+CHOICE=$(dialog --clear \
+                --backtitle "$BACKTITLE" \
+                --title "$TITLE" \
+                --menu "$MENU" \
+                $HEIGHT $WIDTH $CHOICE_HEIGHT \
+                "${OPTIONS[@]}" \
+                2>&1 >/dev/tty)
+
+
+clear
+#cd $DIRECTORY
+case $CHOICE in
+        1)
+
+	HEIGHT=15
+	WIDTH=60
+	CHOICE_HEIGHT=4
+	MENU="Choose what to Launch?"
+
+	OPTIONS=(1 "Anarchy Online"
+ 	         2 "Clicksaver"
+ 	         3 "Mishbuddy"
+ 	         4 "Tinydump")
+         
+	CHOICE=$(dialog --clear \
+    	            --backtitle "$BACKTITLE" \
+    	            --title "$TITLE" \
+    	            --menu "$MENU" \
+    	            $HEIGHT $WIDTH $CHOICE_HEIGHT \
+    	            "${OPTIONS[@]}" \
+    	            2>&1 >/dev/tty)
+    	            
+    	            case $CHOICE in
+    	            
+    	            1)
+    	            
+    	            echo "launching AO"
+    	            prog="Anarchy Online"
+    	            launch StartAO.sh
+    	            
+    	            ;;
+    	            
+    	            2)
+    	            
+    	            echo "Lauching Clicksaver"
+    	            prog="Clicksaver"
+    	            launch StartClicksaver.sh
+    	            
+    	            
+    	            
+    	            
+    	            ;;
+    	            
+    	            3)
+    	            
+    	            echo "Launching Mishbuddy"
+    	            prog="MishBuddy"
+    	            launch StartMishBuddy.sh
+    	            
+    	            
+    	            ;;
+    	            
+    	            4)
+    	            
+    	            echo "Lauching Tinydump"
+    	            prog="TinyDump"
+    	            launch StartTinyDump
+    	           
+    	            
+    	            exit
+    	            esac
+
+        
+        
+        ;;
+        
+        
+        2)
+
+DIRECTORY=`pwd`
+kernel=$(uname -a)
+HEIGHT=15
+WIDTH=60
+CHOICE_HEIGHT=3
 BACKTITLE="Anarchy Online Installer"
 MENU="What engine?"
 
 OPTIONS=(1 "Old Client"
-         2 "New Engine")
+         2 "New Engine"
+         3 "Third Party only")
          
 CHOICE=$(dialog --clear \
                 --backtitle "$BACKTITLE" \
@@ -436,5 +592,83 @@ install_AO ne-d9vk
 
           
 
-esac
+		esac
+		;;
+
+
+		3)
+		
+		############################################
+        ######### Install Thirdparty ###############
+        ############################################
+		
+echo 'Third party only'
+dialog_addons
+
+engine_selection
+
+install_AO 3rd-party		
+
+		
+
+
+		esac
+		;;
+		
+		
+		3)
+		
+		echo "Configure"
+		
+		HEIGHT=15
+		WIDTH=60
+		CHOICE_HEIGHT=4
+		MENU="What to configure?"
+
+		OPTIONS=(1 "Winecfg"
+	 	         2 "Winetricks"
+	 	         3 "Update D9VK on New Engine-D9VK install."
+	 	         4 "Update AOUI.sh")
+         
+		CHOICE=$(dialog --clear \
+	    	            --backtitle "$BACKTITLE" \
+	    	            --title "$TITLE" \
+	    	            --menu "$MENU" \
+	    	            $HEIGHT $WIDTH $CHOICE_HEIGHT \
+	    	            "${OPTIONS[@]}" \
+	    	            2>&1 >/dev/tty)
+    	            
+	    	            case $CHOICE in
+    	            
+	    	            1)
+					#Winecfg
+					
+					folder='$(zenity --file-selection --directory --title="Select Prefix Folder for AO")'
+					WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 winecfg
+					echo 'done'
+					;;
+					
+					2)
+					#Winetricks
+					
+					folder='$(zenity --file-selection --directory --title="Select Prefix Folder for AO")'
+					WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 winetricks
+					echo 'done'
+					;;
+					
+					3)
+					#Update D9Vk
+					folder='$(zenity --file-selection --directory --title="Select Prefix Folder for AO")'
+					WINEDEBUG=-all WINEPREFIX=$folder WINEARCH=win32 winetricks d9vk_master
+					echo 'done'
+					;;
+					4)
+		
+					echo 'Updating AOUI.sh'
+					cd $DIRECTORY
+					rm AOUI.sh
+					curl -O https://raw.githubusercontent.com/magzu/AOUI/master/AOUI.sh
+					bash $DIRECTORY/AOUI.sh
+					esac
+		
 esac
