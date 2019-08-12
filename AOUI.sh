@@ -363,7 +363,7 @@ create_AO_shortcut () {
 cd $DIRECTORY
 
 if [[ $kernel == *"FreeBSD"* ]]; then
-	echo 'env WINEPREFIX="/home/$USER/Games/Anarchy Online" wine C:\windows\command\start.exe /Unix "/home/$USER/Games/Anarchy Online/dosdevices/c:/users/Public/Desktop/Anarchy\ Online.lnk"'
+	echo 'env WINEPREFIX="$folder" wine C:\windows\command\start.exe /Unix "$folder/dosdevices/c:/users/Public/Desktop/Anarchy\ Online.lnk"'
 fi
 if [[ $kernel == *"Linux"* ]]; then
 echo "#!/bin/bash" > StartAO.sh
